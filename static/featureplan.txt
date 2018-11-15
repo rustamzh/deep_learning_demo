@@ -1,0 +1,13 @@
+ac: AutoCorrelation blockSize=10344  stepSize=5172 ACNbCoeffs=1
+en: Energy blockSize=10344  stepSize=5172
+
+mfcc: MFCC blockSize=10344  stepSize=5172 CepsNbCoeffs=1
+sf: SpectralFlatness blockSize=10344  stepSize=5172
+
+sr: SpectralRolloff blockSize=10344  stepSize=5172
+
+ss: SpectralSlope blockSize=10344  stepSize=5172
+
+sp: SpectralVariation  blockSize=10344  stepSize=5172
+
+zcr: ZCR  blockSize=10344  stepSize=5172

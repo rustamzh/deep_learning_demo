@@ -1,0 +1,81 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <title>Demo app</title>
+        <!--<link rel=stylesheet type=text/css href="{{ url_for('static', filename='semantic.min.css') }}">-->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+        <link rel=stylesheet type=text/css href="{{ url_for('static', filename='dropzone.css') }}">
+    </head>
+
+    <body>
+        <div class="container">
+            <div class="row">
+                <h1>Chat bot</h1>
+
+            </div>
+            <div class="row">
+            </div>
+            <div class="row">
+                <form class="ui form dropzone" id="iddropzone" action="{{ url_for('hello_world') }}" method=post>
+                </form>
+            </div>
+            <div id="waveform"></div>
+            <div class="row">
+            </div>
+            <div class="row">
+                <button class="ui button" onclick="wavesurfer.playPause()" name=play >Play</button>
+                <button class="ui button" onclick="getClass()" name=play >Get Class</button>
+            </div>
+        </div>
+
+
+        <script src="https://unpkg.com/wavesurfer.js"></script>
+        <script src="https://unpkg.com/wavesurfer.js/dist/plugin/wavesurfer.regions.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+        <script src="{{ url_for('static', filename='dropzone.js') }}"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@0.13.3/dist/tf.min.js"> </script>
+        <script>
+            function getClass() {
+                jQuery.get( `/offset/${filename}/${offset}`, function(data) {
+                    console.log(data)
+                })
+                    .fail(function() {
+                        alert( "error" );
+                    })
+            }
+            filename = "demo.wav";
+            offset = 0;
+            var wavesurfer = WaveSurfer.create({
+                container: '#waveform',
+                plugins: [
+                    WaveSurfer.regions.create({regions:[{start: 0, end:30, color: 'hsla(400, 100%, 30%, 0.5)', resize: false}]})
+                ],
+                waveColor: 'violet',
+                progressColor: 'purple'
+            });
+            wavesurfer.load('../static/demo.wav');
+            Dropzone.autoDiscover = false;
+            wavesurfer.on("region-update-end", function (region) {
+                offset = Math.trunc(region.start);
+                console.log(region.start);
+                console.log(region.end);
+            });
+            wavesurfer.on('ready', function () {
+                wavesurfer.play();
+            });
+            var myDropzone = new Dropzone("form#iddropzone", {maxFiles: 1});
+            myDropzone.on("success", function(file) {
+                var txt = file.xhr.responseText;
+                filename = txt.substring(txt.lastIndexOf('/')+1);
+                console.log(txt);
+                myDropzone.removeFile(file);
+                wavesurfer.clearRegions();
+                wavesurfer.load(txt);
+            });
+        </script>
+    </body>
+</html>
